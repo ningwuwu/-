@@ -1,0 +1,102 @@
+template<class T, class Ref, class Ptr>
+	class ListIterator
+	{
+		typedef ListNode<T>* PNode;
+		typedef ListIterator<T, Ref, Ptr> Self;
+	public:
+		ListIterator(PNode pNode = nullptr)
+			: _pNode(pNode)
+		{}
+		ListIterator(const Self& l)
+			: _pNode(l._pNode)
+		{}
+		T& operator*()
+		{
+			return _pNode->_val;
+		}
+		T& operator->()
+		{
+			return &(operator*());
+		}
+		Self& operator++()
+		{
+			_pNode = _pNode->_pNext;
+			return *this;
+		}
+		Self& operator++(int)
+		{
+			Self tmp(*this);
+			_pNode = _pNode->_pNext;
+			return *this;
+		}
+		bool operator==(const Self& l)
+		{
+			return l._pNode == _pNode;
+		}
+		bool operator!=(const Self& l)
+		{
+			return l._pNode != _pNode;
+		}
+		
+
+
+
+
+		PNode _pNode;
+
+	};
+	//反向迭代器
+	template<class T, class Ref, class Ptr, class Iterator>
+	class ListReverseIterator
+	{
+		typedef ListReverseIterator<T, Ref, Ptr, Iterator> Self;
+	public:
+		ListReverseIterator(const Iterator& it)
+			: _it(it)
+		{}
+		ListReverseIterator(const Self& s)
+			: _it(s._it)
+		{}
+		Ref operator*()
+		{
+			Iterator tmp = _it;
+			return *(--tmp);
+		}
+		Ptr operator->()
+		{
+			return &operator*();
+		}
+		//反向迭代器的++就是正向迭代器的--；相反，方向迭代器的--就是正向迭代器的++
+		Self& operator++()
+		{
+			--_it;
+			return *this; 
+		}
+		Self& operator++(int)
+		{
+			Iterator tmp(_it);
+			--_it;
+			return *this;
+		}
+		Self& operator--()
+		{
+			++_it;
+			return *this;
+		}
+		Self& operator--(int)
+		{
+			Iterator tmp(_it);
+			++_it;
+			return *this;
+		}
+		bool operator!=(const Self& s)
+		{
+			return _it != s._it;
+		}
+		bool operator==(const Self& s)
+		{
+			return _it == s._it;
+		}
+	private:
+		Iterator _it;
+	};
