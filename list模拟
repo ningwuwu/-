@@ -1,0 +1,335 @@
+//模拟实现list容器
+namespace LIST
+{
+	
+	template<class T>
+	//list的节点类
+	struct ListNode
+	{	
+		ListNode(const T& val = T())
+			: _pPre(nullptr)
+			, _pNext(nullptr)
+			, _val(val)
+		{}	
+		ListNode* _pPre;
+		ListNode* _pNext;
+		T _val;
+	};
+	template<class T, class Ref, class Ptr>
+	class ListIterator
+	{
+		typedef ListNode<T>* PNode;
+		typedef ListIterator<T, Ref, Ptr> Self;
+	public:
+		ListIterator(PNode pNode = nullptr)
+			: _pNode(pNode)
+		{}
+		ListIterator(const Self& l)
+			: _pNode(l._pNode)
+		{}
+		T& operator*()
+		{
+			return _pNode->_val;
+		}
+		T& operator->()
+		{
+			return &(operator*());
+		}
+		Self& operator++()
+		{
+			_pNode = _pNode->_pNext;
+			return *this;
+		}
+		Self& operator++(int)
+		{
+			Self tmp(*this);
+			_pNode = _pNode->_pNext;
+			return *this;
+		}
+		bool operator==(const Self& l)
+		{
+			return l._pNode == _pNode;
+		}
+		bool operator!=(const Self& l)
+		{
+			return l._pNode != _pNode;
+		}
+		
+
+
+
+
+		PNode _pNode;
+
+	};
+	//反向迭代器
+	template<class T, class Ref, class Ptr, class Iterator>
+	class ListReverseIterator
+	{
+		typedef ListReverseIterator<T, Ref, Ptr, Iterator> Self;
+	public:
+		ListReverseIterator(const Iterator& it)
+			: _it(it)
+		{}
+		ListReverseIterator(const Self& s)
+			: _it(s._it)
+		{}
+		Ref operator*()
+		{
+			Iterator tmp = _it;
+			return *(--tmp);
+		}
+		Ptr operator->()
+		{
+			return &operator*();
+		}
+		//反向迭代器的++就是正向迭代器的--；相反，方向迭代器的--就是正向迭代器的++
+		Self& operator++()
+		{
+			--_it;
+			return *this; 
+		}
+		Self& operator++(int)
+		{
+			Iterator tmp(_it);
+			--_it;
+			return *this;
+		}
+		Self& operator--()
+		{
+			++_it;
+			return *this;
+		}
+		Self& operator--(int)
+		{
+			Iterator tmp(_it);
+			++_it;
+			return *this;
+		}
+		bool operator!=(const Self& s)
+		{
+			return _it != s._it;
+		}
+		bool operator==(const Self& s)
+		{
+			return _it == s._it;
+		}
+	private:
+		Iterator _it;
+	};
+	template<class T>
+	class list
+	{
+		typedef ListNode<T> Node;
+		typedef Node* PNode;
+	public:
+		typedef ListIterator<T, T&, T*> Iterator;
+		typedef ListIterator<T, const T&, const T*> ConstIterator;
+		typedef ListReverseIterator<T, T&, T*, Iterator> ReverseIterator;
+		typedef ListReverseIterator<T, const T&, const T*, ConstIterator> ConstReverseIterator;
+	private:
+		PNode _pHead;
+	private:
+		void CreateHead()
+		{
+			_pHead = new Node;
+			_pHead->_pPre = _pHead;
+			_pHead->_pNext = _pHead;
+		}
+	public:
+		list()
+		{
+			CreateHead();
+		} 
+		list(int n, const T& value = T())
+		{
+			CreateHead();
+			for(size_t i = 0; i < n; ++i)
+			{
+				PushBack(value);
+			}
+		}
+		template<class Iterator>
+		list(Iterator first, Iterator last)
+		{
+			CreateHead();
+			while(first != last)
+			{
+				PushBack(*first);
+				++first;
+			}
+		}
+		//拷贝构造函数
+		list(const list<T>& l)
+		{
+			CreateHead();
+			list<T> tmp(l.cBegin(), l.cEnd());
+			this->Swap(tmp);
+		}
+		list<T>& operator=(const list<T>& l)
+		{
+			if(this != &l)
+			{
+				list<T> tmp(l);
+				this->Swap(tmp);
+			}
+			return *this;
+		}
+		~list()
+		{
+			Clear();
+			delete _pHead;
+			_pHead = nullptr;
+		}
+		Iterator Begin();
+		{
+			return Iterator(_pHead->_pNext);
+		}
+		Iterator End()
+		{
+			return Iterator(_pHead);
+		}
+		ConstIterator CBegin() const
+		{
+			return ConstIterator(_pHead->_pNext);
+		}
+		ConstIterator CEnd() const
+		{
+			return ConstIterator(_pHead);
+		}
+		ReverseIterator RBegin()
+		{
+			return ReverseIterator(_End());
+		}
+		ReverseIterator REnd()
+		{
+			return ReverseIterator(_Begin());
+		}
+		ConstReverseIterator CRBegin() const
+		{
+			return ConstReverseIterator(CEnd);
+		}
+		ConstReverseIterator CREnd() const
+		{
+			return ConstReverseIterator(CBegin());
+		}
+		size_t size() const
+		{
+			size_t count = 0;
+			PNode pCur = _pHead->_Next;
+			while(pCur->_Next != _pHead)
+			{
+				count++;
+				pCur = pCur->_pNext;
+			}
+			return count;
+		}
+		bool Empty() const
+		{
+			return _pHead->_pNext == _pHead;
+		}
+		void resize(size_t newsize; const T& val = T())
+		{
+			size_t oldsize = size();
+			if(oldsize <= newsize)
+			{
+				for(size_t i = oldsize; i < newsize; ++i)
+					PushBack(val);
+			}
+			else
+				for(size_t i = newsize; i < oldsize; ++i)
+					PopBack();
+		}
+		//list access
+		T& front()
+		{
+			return _pHead->_pNext->_val;
+		}
+		const T& front()const
+		{
+			return _pHead->_pNext->_val;
+		}
+		T& back()
+		{
+			return _pHead->_pPre->_val;
+		}
+		const T& back()const
+		{
+			return _pHead->_pPre->_val;
+		}
+		void PushBack(const T& val)
+		{
+			PNode pNewNode = new Node(val);
+			pNewNode->_pNext = _pHead;
+			pNewNode->_pPre = _pHead->_pPre;
+			_pHead->_pPre = pNewNode;
+			_pNewNode->_pPre ->_pNext = pNewNode;
+		}
+		void PopBack()
+		{
+			PNode pDel = _pHead->_pPre;
+			if(pDel != pHead)
+			{
+				_pHead->_Pre = _pDel->_pPre;
+				pDel->_pPre->_pNext = _pHead;
+				delete pDel;
+			}
+		}
+		void PushFront(const T& val)
+		{
+			PNode pNewNode = new Node(val);
+			pNewNode->_pNext = _pHead->_pNext;
+			pNewNode->_pPre = _pHead;
+			_pHead->_pNext = pNewNode;
+			pNewNode->_pNext->_pPre = pNewNode;
+		}
+		void PopFront()
+		{
+			PNode pDel = _pHead->_pNext;
+			if(pDel != pHead)
+			{
+				_pHead->_pNext = pDel->_pNext;
+				_pDel->_pNext->_pPre = _pHead;
+				delete _pDel;
+			}
+		}
+		//在pos位置前插入值为val的节点
+		Iterator Insert(Iterator pos, const T& val)
+		{
+			PNode pNewNode = new Node(val);
+			PNode pCur = pos._pNode;
+			pNewNode->_pNext = pCur;
+			pNewNode->_pPre = pCur->_pPre;
+			pNewNode->_pPre->_pNext = pNewNode;
+			pCur->_pPre = pNewNode;
+			return Iterator(pNewNode);
+		}
+		Iterator Erase(Iterator pos)
+		{
+			PNode pDel = pos._pNode;
+			pRet = pDel->_pNext;
+
+			pDel->_pNext->_pPre = pDel->_pPre;
+			pDel->_pPre->_pNext = pDel->_pNext;
+			delete pDel;
+			return Iterator(pRet);
+		}
+		void Clear()
+		{
+			PNode pCur = _pHead->_pNext;
+			while(pCur != _pHead)
+			{
+				_pHead->_pNext = pCur->_pNext;
+				delete pCur;
+				pCur = _pHead->_pNext;
+			}
+			_pHead->_pNext = _pHead;
+			_pHead->_pPre = _pHead;
+		}
+		void Swap(list<T>& l)
+		{
+			swap(_pHead, l._pHead);
+		}
+
+	};
+}
