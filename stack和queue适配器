@@ -1,0 +1,64 @@
+//模拟实现stack
+///////////////////////////////////////////////////////////////////////////////
+template<class T, class Con = deque<T>>
+	class Stack
+	{
+	public:
+		Stack()
+		{}
+		void Push(const T& x)
+		{
+			_c.push_back(x);
+		}
+		void Pop()
+		{
+			_c.pop_back();
+		}
+		T& top()
+		{
+			return _c.back();
+		}
+		size_t size() const
+		{
+			return _c.size();
+		}
+		bool Empty()const
+		{
+			return _c.empty();
+		}
+	private:
+		Con _c;
+	};
+
+
+//queue的模拟实现
+//queue底层容器是dequeue
+namespace QUEUE
+{
+	template<class T, class Con = deque<T>>
+		class Queue
+		{
+		public:
+			Queue()
+			{}
+			void push(const T& x)
+			{
+				_c.push_back(x);
+			}
+			void pop()
+			{
+				_c.pop_back();
+			}
+			T& back()
+			{
+				return _c.back();
+			}
+			T& front()
+			{
+				return _c.front();
+			}
+
+		private:
+			Con _c;
+		};
+}
