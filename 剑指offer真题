@@ -1,0 +1,345 @@
+//二维有序数组中查找元素
+/*
+class Solution {
+public:
+    bool Find(int target, vector<vector<int> > array) {
+        int i=0;
+        int j=array[0].size()-1;
+
+        while(i<array.size()&&j>=0){
+            if(array[i][j]==target)
+                return true;
+            if(array[i][j]<target)
+                i++;
+            else if(array[i][j]>target)
+                j--;
+        }
+        return false;
+    }
+};
+*/
+/////////////////////////////////////
+//字符串替换
+/*
+class Solution {
+public:
+	void replaceSpace(char *str,int length) {
+        string s(str);
+        size_t i = 0;
+        while(i=s.find(' ',i))>-1)
+        {
+            s.erase(i, 1);
+            s.insert(i, "%20");
+        }
+        auto ret = s.c_str();
+        strcpy(str, ret);
+	}
+};
+class Solution {
+public:
+	void replaceSpace(char *str,int length) {
+        int count = 0;
+        for(int i = 0; i < length; ++i)
+        {
+            if(str[i] == ' ')
+                ++count;
+        }
+        for(int i = length-1; i >= 0; --i)
+        {
+            if(str[i] != ' ')
+            {
+                str[i + count*2] = str[i];
+            }
+            else
+            {
+                --count;
+                str[i+count*2] = '%';
+                str[i+count*2+1] = '2';
+                str[i+count*2+2] = '0';
+            }
+        }
+	}
+};
+*/
+///////////////////////
+//从尾到头打印单链表
+/*
+class Solution {
+public:
+    vector<int> printListFromTailToHead(ListNode* head) {
+        vector<int> result;
+        while(head == nullptr)
+            return result;
+        stack<ListNode*> reverse;
+        ListNode* node = head;
+        while(node)
+        {
+            reverse.push(node);
+            node = node->next;
+        }
+        while(!reverse.empty())
+        {
+            node = reverse.top();
+            result.push_back(node->val);
+            reverse.pop();
+        }
+        return result;
+    }
+};
+/////////////////
+//反向迭代器打印
+class Solution {
+public:
+    vector<int> printListFromTailToHead(ListNode* head) {
+        vector<int> result;
+        if(head == nullptr)
+            return result;
+        ListNode* node = head;
+        while(node)
+        {
+            result.push_back(node->val);
+            node = node->next;
+        }
+        return (vector<int>(result.rbegin(), result.rend()));
+    }
+};
+*/
+/////////////////////////////////
+/*
+重建二叉树；无论给那种遍历方式，必须有一个中序遍历
+利用归并排序
+class Solution {
+public:
+    TreeNode* reConstructBinaryTree(vector<int> pre,vector<int> vin) {
+        int vinlen = vin.size();
+        if(vinlen == 0)
+        {
+            return nullptr;
+        }
+        TreeNode* head = new TreeNode(pre[0]);
+        vector<int> left_pre, left_vin, right_pre, right_vin;
+        int key = 0;
+        for(int i = 0; i < vinlen; ++i)
+        {
+            if(vin[i] == pre[0])
+                key = i;
+        }
+        for(int i = 0; i < key; ++i)
+        {
+            left_vin.push_back(vin[i]);
+            left_pre.push_back(pre[i+1]);
+        }
+        for(int i = key+1; i < vinlen; ++i)
+        {
+            right_vin.push_back(vin[i]);
+            right_pre.push_back(pre[i]);
+        }
+        head->left = reConstructBinaryTree(left_pre, left_vin);
+        head->right = reConstructBinaryTree(right_pre, right_vin);
+        return head;
+    }
+};
+*/
+/*
+两个栈实现一个队列：
+1.入栈：先判断B栈有没有数据，如果有数据，需要先出栈，因为必须保证B栈是空栈，然后再让A栈入栈；
+2.出栈：先判断A栈有没有数据，如果有数据，需要先出栈，将数据全部压入B栈中，然后再让B栈出栈。
+class Solution
+{
+public:
+    void push(int node) {
+        while(!stack2.empty())
+        {
+            stack1.push(stack2.top());
+            stack2.pop();
+        }
+        stack1.push(node);
+    }
+
+    int pop() {
+        while(!stack1.empty())
+        {
+            stack2.push(stack1.top());
+            stack1.pop();
+        }
+        int result = stack2.top();
+        stack2.pop();
+        return result;
+    }
+
+private:
+    stack<int> stack1;
+    stack<int> stack2;
+};
+/////////////////////////
+error
+class Solution
+{
+public:
+    void push(int node) {
+	//需要先判断2栈是不是空的，如果2栈不为空，那下次使用一定就会出现问题
+        stack1.push(node);
+    }
+
+    int pop() {
+        int tmp;
+		//错误写法：必须使用循环，
+        if(!stack2.empty())
+        {
+            tmp = stack2.top();
+            stack2.pop();
+            return tmp;
+        }
+        else
+        {
+            while(!stack1.empty())
+            {
+                tmp = stack1.top();
+                stack2.push(tmp);
+                stack1.pop();
+            }
+        }
+    }
+
+private:
+    stack<int> stack1;
+    stack<int> stack2;
+};
+*/
+/*
+旋转数组的最小数字
+二分查找
+class Solution {
+public:
+    int minNumberInRotateArray(vector<int> rotateArray) {
+        int low = 0;
+        int hight = rotateArray.size()-1;
+        while(low < hight)
+        {
+            int mid = low + (hight-low)/2;
+            if(rotateArray[mid] > rotateArray[hight])
+                low = mid + 1;
+            else if(rotateArray[mid] == rotateArray[hight])
+            {
+                if(rotateArray[hight] < rotateArray[hight-1])
+                    return rotateArray[hight];
+                else
+                    hight = hight - 1;
+            }
+            else
+            {
+                hight = mid;
+            }
+        }
+        return rotateArray[low];
+    }
+};
+*/
+/*
+斐波那契数列
+循环写法
+class Solution {
+public:
+    int Fibonacci(int n) {
+        int a = 0;
+        int b = 1;
+        while(n--)
+        {
+            a += b; 
+            b = a - b;
+        }
+        return a;
+    }
+};
+递归写法空间复杂度太大
+*/
+/*
+//青蛙跳台阶：与斐波那契数列数列有所不同，因为斐波那契数列的第一项和第二项是1，1，他是从0开始加起来的；而这里的数列其实是1，2
+//递归写法
+class Solution {
+public:
+    int jumpFloor(int number) {
+        if(number <= 0)
+            return -1;
+        if(number == 1)
+            return 1;
+        else if(number == 2)
+            return 2;
+        else
+            return (jumpFloor(number-1) + jumpFloor(number-2));
+    }
+};
+//迭代写法
+class Solution {
+public:
+    int jumpFloor(int number){
+	//这里控制a和b谁为1很重要，如果b为1，则需要多进行一次运算，和题目就不相符了
+        int a = 1;
+        int b = 0;
+        while(number--)
+        {
+            a += b;
+            b = a-b;
+        }
+        return a;
+    }
+};
+*/
+/*
+//变态跳台阶
+//循环
+class Solution {
+public:
+    int jumpFloorII(int number) {
+        if(number == 1)
+            return 1;
+        int a = 1;
+            while(number > 1)
+            {
+                a = a*2;
+                number--;
+            }
+        return a;
+    }
+};
+//递归
+//很多情景下会超出内存限制
+class Solution {
+public:
+    int jumpFloorII(int number) {
+        if(number == 1)
+            return 1;
+        return(2*jumpFloorII(number--));
+    }
+};
+*/
+/*
+//矩形覆盖
+//递归
+class Solution {
+public:
+    int rectCover(int number) {
+        if(number == 1)
+            return 1;
+        if(number == 2)
+            return 2;
+        return (rectCover(number-1) + rectCover(number-2));
+    }
+};
+//循环
+class Solution {
+public:
+    int rectCover(int number) {
+        if(number == 0)
+            return 0;
+        int a = 1;
+        int b = 0;
+        while(number--)
+        {
+            a += b;
+            b = a - b;
+        }
+        return a;
+    }
+};
+*/
