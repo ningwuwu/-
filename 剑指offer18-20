@@ -1,0 +1,133 @@
+/*
+//二叉树的镜像
+class Solution {
+public:
+    void Mirror(TreeNode *pRoot) {
+        if(pRoot == nullptr || (pRoot->left == nullptr && pRoot->right == nullptr))
+            return;
+        TreeNode *tmp = pRoot->left;
+        pRoot->left = pRoot->right;
+        pRoot->right = tmp;
+        if(pRoot->left)
+            Mirror(pRoot->left);
+        if(pRoot->right)
+            Mirror(pRoot->right);
+    }
+};
+//栈实现
+//操作二叉树的方法，先创建一个空的根节点，不能用pRoot直接操作
+class Solution {
+public:
+    void Mirror(TreeNode *pRoot) {
+        if(pRoot == nullptr)
+            return;
+        stack<TreeNode*> s;
+        TreeNode* p = nullptr;
+        s.push(pRoot);
+        while(s.size())
+        {
+            p = s.top();
+            s.pop();
+            swap(p->left, p->right);
+            if(p->left)
+                s.push(p->left);
+            if(p->right)
+                s.push(p->right);
+        }
+    }
+};
+//队列实现
+class Solution {
+public:
+    void Mirror(TreeNode *pRoot) {
+        if(pRoot == nullptr)
+            return;
+        queue<TreeNode*> q;
+        TreeNode* p = nullptr;
+        q.push(pRoot);
+        while(q.size())
+        {
+            p = q.front();
+            q.pop();
+            swap(p->left, p->right);
+            if(p->left)
+                q.push(p->left);
+            if(p->right)
+                q.push(p->right);
+        }
+    }
+};
+*/
+/*
+//顺时针打印二维数组
+class Solution {
+public:
+    vector<int> printMatrix(vector<vector<int> > matrix) {
+        vector<int> res;
+        res.clear();
+        int row = matrix.size();
+        int col = matrix[0].size();
+        int left = 0, right = col-1, top = 0,bottom = row-1;
+        while(left <= right && top <= bottom)
+        {
+            for(int i = left; i <= right; ++i)
+            {
+                res.push_back(matrix[top][i]);
+            }
+            for(int i = top+1; i <= bottom; ++i)
+            {
+                res.push_back(matrix[i][right]);
+            }
+            if(top != bottom)
+            {
+                for(int i = right-1; i >= left; --i)
+                {
+                    res.push_back(matrix[bottom][i]);
+                }
+            }
+            if(right != left)
+            {
+                for(int i = bottom-1; i > top;--i)
+                {
+                    res.push_back(matrix[i][left]);
+                }
+            }
+            left++,right--,top++,bottom--;
+        }
+        return res;
+    }
+};
+*/
+/*
+//包含min函数的栈
+
+class Solution {
+public:
+    stack<int> s1, s2;
+    void push(int value) {
+        s1.push(value);
+        if(s2.empty())
+        {
+            s2.push(value);
+        }
+        else{
+            if(value <= s2.top())
+            {
+                s2.push(value);
+            }
+        }
+    }
+    void pop() {
+	//如果弹出最小元素，下次还需要弹出次小元素，所以必须判断
+        if(s1.top() == s2.top())
+            s2.pop();
+        s1.pop();
+    }
+    int top() {
+        return s1.top();
+    }
+    int min() {
+        return s2.top();
+    }
+};
+*/
