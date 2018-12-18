@@ -1,0 +1,226 @@
+/*
+//层序打印二叉树
+//循环
+class Solution {
+public:
+    vector<int> PrintFromTopToBottom(TreeNode* root) {
+        vector<int> res;
+        if(root == nullptr)
+            return res;
+        queue<TreeNode*> q;
+        q.push(root);
+        while(!q.empty())
+        {
+            res.push_back(q.front()->val);
+            if(q.front()->left)
+                q.push(q.front()->left);
+            if(q.front()->right)
+                q.push(q.front()->right);
+            q.pop();
+        }
+        return res;
+    }
+};
+//递归
+//但是内存会超限，一般还是用循环写比较好
+class Solution {
+public:
+    vector<int> PrintFromTopToBottom(TreeNode* root) {
+        vector<int> res;
+        if(root == nullptr)
+            return res;
+        queue<TreeNode*> q;
+        TreeNode* p = root;
+        q.push(root);
+        res.push_back(q.front()->val);
+        while(p->left || p->right)
+        {
+        if(p->left)
+            q.push(p->left);
+        if(p->right)
+            q.push(p->right);
+        q.pop();
+        }
+        if(p->left)
+            PrintFromTopToBottom(p->left);
+        if(p->right)
+            PrintFromTopToBottom(p->right);
+        return res;
+    }
+};
+*/
+/*
+//二叉搜索树的后序遍历序列
+//递归
+class Solution {
+public:
+    bool VerifySquenceOfBST(vector<int> sequence) {
+        if(sequence.size() == 0)
+            return false;
+        vector<int> leftTree, rightTree;
+        int len = sequence.size();
+        int root = sequence[len-1];
+        int i = 0;
+        for(; i < len-1; ++i)
+        {
+            if(sequence[i] > root)
+                break;
+        }
+        for(int j = i; j < len-1; ++j)
+        {
+            if(sequence[j] < root)
+                return false;
+        }
+        if(i != 0)
+        {
+            for(int m = 0; m < i; ++m)
+            {
+                leftTree.push_back(sequence[m]);
+            }
+        }
+        if(i != len-2)
+        {
+            for(int n = i; n < len-1; ++n)
+            {
+                rightTree.push_back(sequence[n]);
+            }
+        }
+        bool left = true, right = true;
+        if(leftTree.size() > 1)
+            VerifySquenceOfBST(leftTree);
+        if(rightTree.size() > 1)
+            VerifySquenceOfBST(rightTree);
+        return left && right;
+    }
+};
+//循环
+class Solution {
+public:
+    bool VerifySquenceOfBST(vector<int> sequence) {
+        size_t size = sequence.size();
+        if(size == 0)
+            return false;
+        int i = 0;
+		//size--和之后的i=0相对应，size一直--，就能让循环的终点位置改变，则大循环里面的第二个循环，正好可以再一次判断数列中是否有一部分时满足条件的
+        while(size--)
+        {
+            while(sequence[i] < sequence[size])
+                i++;
+            while(sequence[i] > sequence[size])
+                i++;
+            if(i < size)
+                return false;
+				//当第一次循环时发现，长数列不是我们需要的，此时需要继续判断，其中的部分是不是我们需要的，需要让i从0重新开始增长。
+            i = 0;
+        }
+        return true;
+    }
+};
+*/
+/*
+//二叉树中和为某一值的路径
+class Solution {
+public:
+    vector<vector<int>> res;
+    vector<int> path;
+    void find(TreeNode* p, int sum)
+    {
+        if(p == nullptr)
+            return;
+        path.push_back(p->val);
+        if(p->left == nullptr && p->right == nullptr && sum == p->val)
+            res.push_back(path);
+        else{
+            if(p->left)
+                find(p->left, sum - p->val);
+            if(p->right)
+                find(p->right, sum - p->val);
+        }
+        path.pop_back();
+    }
+    vector<vector<int> > FindPath(TreeNode* root,int expectNumber) {
+        find(root, expectNumber);
+        return res;
+    }
+};
+*/
+/*
+//负载链表的复制
+class Solution {
+public:
+    RandomListNode* Clone(RandomListNode* pHead)
+    {
+        if(pHead == nullptr)
+            return nullptr;
+        RandomListNode* curNode = pHead;
+        while(curNode)
+        {
+            RandomListNode* node = new RandomListNode(curNode->label);
+            node->next = curNode->next;
+            curNode->next = node;
+            curNode = node->next;
+        }
+        curNode = pHead;
+        while(curNode)
+        {
+            RandomListNode* node = curNode->next;
+            if(curNode->random)
+            {
+                node->random = curNode->random->next;
+            }
+            curNode = node->next;
+        }
+        RandomListNode* pCloneHead = pHead->next;
+        curNode = pHead;
+        RandomListNode* tmp;
+        while(curNode->next)
+        {
+            tmp = curNode->next;
+            curNode->next = tmp->next;
+            curNode = tmp;
+        }
+        return pCloneHead;
+    }
+};
+*/
+/*
+//输入一棵二叉搜索树，将该二叉搜索树转换成一个排序的双向链表
+/*
+struct TreeNode {
+	int val;
+	struct TreeNode *left;
+	struct TreeNode *right;
+	TreeNode(int x) :
+			val(x), left(NULL), right(NULL) {
+	}
+};
+class Solution {
+public:
+    void ConvertHelp(TreeNode* cur, TreeNode*& pre)
+    {
+        if(cur == nullptr)
+            return ;
+        ConvertHelp(cur->left, pre);
+        cur->left = pre;
+        if(pre)
+        {
+            pre->right = cur;
+        }
+        pre = cur;
+        ConvertHelp(cur->right, pre);
+    }
+    TreeNode* Convert(TreeNode* pRootOfTree)
+    {
+        if(pRootOfTree == nullptr)
+            return nullptr;
+        TreeNode* pre = nullptr;
+        ConvertHelp(pRootOfTree, pre);
+        TreeNode* res = pRootOfTree;
+        while(res->left)
+        {
+            res = res->left;
+        }
+        return res;
+    }
+};
+*/
